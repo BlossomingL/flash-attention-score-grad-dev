@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""无副作用探测本地 FlashAttentionScoreGrad 工作区。"""
+"""无副作用探测 FlashAttentionScoreGrad 相关路径。"""
 
 from __future__ import annotations
 
@@ -9,29 +9,27 @@ from pathlib import Path
 
 
 SOURCE_DIRS = [
-    "ops-transformer/attention/flash_attention_score_grad",
-    "ops-transformer-drop/attention/flash_attention_score_grad",
-    "ops-transformer-smallds/attention/flash_attention_score_grad",
-    "ops-transformer-smallds-gpt/attention/flash_attention_score_grad",
-    "ops-transformer-tiling/attention/flash_attention_score_grad",
+    "attention/flash_attention_score_grad",
 ]
 
 HARNESS_FILES = [
-    "fag_debug_tools/run_fag.py",
-    "fag_debug_tools/fag_test/config.py",
-    "fag_debug_tools/fag_test/golden.py",
-    "fag_debug_tools/fag_test/pipeline.py",
-    "fag_debug_tools/fag_test/runner.py",
-    "fag_debug_tools/fag_test/test_utils.py",
-    "fag_debug_tools/fag_test/show_prof.py",
-    "fag_debug_tools/docs/debug_notes.md",
-    "fag_debug_tools/docs/pse_shapes.md",
+    "run_fag.py",
+    "run_with_pta.sh",
+    "run_with_tilingKey.sh",
+    "fag_test/config.py",
+    "fag_test/golden.py",
+    "fag_test/pipeline.py",
+    "fag_test/runner.py",
+    "fag_test/test_utils.py",
+    "fag_test/show_prof.py",
+    "docs/debug_notes.md",
+    "docs/pse_shapes.md",
 ]
 
 
 def find_workspace_root(start: Path) -> Path:
     for path in [start, *start.parents]:
-        if (path / "fag_debug_tools").exists() or any((path / p).exists() for p in SOURCE_DIRS):
+        if (path / "run_fag.py").exists() or any((path / p).exists() for p in SOURCE_DIRS):
             return path
     return start
 
@@ -60,7 +58,7 @@ def latest_files(root: Path, pattern: str, limit: int) -> list[dict[str, object]
 
 
 def log_signals(root: Path, limit: int) -> list[str]:
-    log = root / "fag_debug_tools" / "run_log.txt"
+    log = root / "run_log.txt"
     if not log.exists():
         return []
     try:
@@ -83,8 +81,8 @@ def main() -> int:
         "workspace_root": str(root),
         "source_trees": rel_status(root, SOURCE_DIRS),
         "harness_files": rel_status(root, HARNESS_FILES),
-        "latest_results": latest_files(root, "fag_debug_tools/results/FlashAttentionScoreGrad_Result_*", args.limit),
-        "top_level_results": latest_files(root, "fag_debug_tools/FlashAttentionScoreGrad_Result_*", args.limit),
+        "latest_results": latest_files(root, "results/FlashAttentionScoreGrad_Result_*", args.limit),
+        "top_level_results": latest_files(root, "FlashAttentionScoreGrad_Result_*", args.limit),
         "recent_log_signals": log_signals(root, args.limit),
     }
 

@@ -4,16 +4,16 @@
 
 ## 编辑前
 
-1. 确认目标源码树：`ops-transformer`、`ops-transformer-drop`、`ops-transformer-smallds`、`ops-transformer-smallds-gpt` 或 `ops-transformer-tiling`。
-2. 在目标仓库执行 `git status --short`，确认已有本地变更。
+1. 确认目标源码树为用户输入的 `<OPS_TRANSFORMER_ROOT>`。
+2. 在目标仓库执行 `git status --short`，确认已有未提交变更。
 3. 围绕路径选择、tiling key、dtype/layout 分支或功能开关做窄范围搜索。
 4. 修改 tiling/kernel 前，记录失败或目标用例 shape。
 
 常用命令：
 
 ```powershell
-rg -n "flash_attention_score_grad|FlashAttentionScoreGrad|FAG" .\ops-transformer-drop\attention\flash_attention_score_grad
-rg -n "TND|BNSD|pse|dropout|rope|sink|deterministic|tilingKey" .\ops-transformer-drop\attention\flash_attention_score_grad\op_host .\ops-transformer-drop\attention\flash_attention_score_grad\op_kernel
+rg -n "flash_attention_score_grad|FlashAttentionScoreGrad|FAG" <OPS_TRANSFORMER_ROOT>\attention\flash_attention_score_grad
+rg -n "TND|BNSD|pse|dropout|rope|sink|deterministic|tilingKey" <OPS_TRANSFORMER_ROOT>\attention\flash_attention_score_grad\op_host <OPS_TRANSFORMER_ROOT>\attention\flash_attention_score_grad\op_kernel
 ```
 
 如果全工作区搜索遇到 Windows `nul` 文件报错，缩小到已知目录搜索。
@@ -31,7 +31,7 @@ rg -n "TND|BNSD|pse|dropout|rope|sink|deterministic|tilingKey" .\ops-transformer
 - 先判断用例是普通 BNSD 类路径还是 TND/varlen 路径。
 - 优先检查架构相关分支，Ascend950/regbase 通常看 `arch35`。
 - 保持 tiling data 布局与 `op_kernel/arch*/flash_attention_score_grad_tiling*.h` 消费端一致。
-- 编辑后，如果有硬件，至少跑 golden-only 和一个 NPU smoke。
+- 编辑后，如果有硬件，至少跑 golden-only 和一个 NPU smoke；涉及指定 tiling_key 时，优先参考 `<FAG_TEST_ROOT>/run_with_tilingKey.sh` 的构建、安装、profiling 链路。
 
 修改 op_kernel：
 
@@ -51,7 +51,7 @@ rg -n "TND|BNSD|pse|dropout|rope|sink|deterministic|tilingKey" .\ops-transformer
 使用覆盖风险的最低成本验证：
 
 ```powershell
-Set-Location .\fag_debug_tools
+Set-Location <FAG_TEST_ROOT>
 python -u .\run_fag.py --golden-only --case .\data\FASG.xls --sheet Sheet1 --start-from 1 --end-at 2
 python -u .\run_fag.py --case .\data\FASG.xls --sheet Sheet1 --pta --pta_mode=only_grad --device 0 --start-from 1 --end-at 2
 ```

@@ -2,17 +2,36 @@
 
 当用户报告 dq/dk/dv 不一致、`diff_max`、结果表失败、golden 问题，或怀疑 PSE/mask/dropout/rope/TND 场景异常时，读取本文件。
 
+如果用户要先生成用例表，或指定 case 表和 sheet 跑用例，先读取 `case-running.md`。
+
 ## 分流流程
 
 1. 用 `--start-from X --end-at X+1` 单行复现。
 2. 先跑 `--golden-only`，验证用例解析和 golden 生成。
-3. 再用同一行跑 `--pta_mode=only_grad`。
+3. 再优先参考 `<FAG_TEST_ROOT>/run_with_pta.sh` 的 PTA 调测链路跑 NPU 精度。
 4. 如果失败，仅在确认 golden 产物与当前代码匹配时，才使用 `--cache-data` 复跑。
 5. 改代码前先归类：环境/依赖问题、非法用例、能力限制、golden/脚本问题、疑似算子精度问题。
 
+## 日常 PTA 脚本
+
+精度验证优先参考：
+
+```bash
+cd <FAG_TEST_ROOT>
+bash ./run_with_pta.sh <CANN_PACKAGE_PATH>
+```
+
+该脚本的核心动作：
+
+- 打印 CANN 包路径并设置 `CANN_PATH=$1`。
+- `source <CANN_PACKAGE_PATH>/cann/bin/setenv.bash`。
+- 执行 `asys info -r=status` 检查环境。
+- 通过 `msprof --output=./profiling` 运行 `python3 run_fag.py --case ./data/FASG.xls --pta --pta-mode only_grad --sheet sheet1 --no-save-golden`。
+- 执行 `python3 show_prof.py` 查看 profiling 结果。
+
 ## 常用命令
 
-在 `fag_debug_tools` 下执行：
+在 `<FAG_TEST_ROOT>` 下执行；这些命令用于 golden-only、单行复现或临时改参数，正式 PTA 调测优先对齐 `run_with_pta.sh`：
 
 ```powershell
 python -u .\run_fag.py --golden-only --case .\data\FASG.xls --sheet Sheet1 --start-from 1 --end-at 2

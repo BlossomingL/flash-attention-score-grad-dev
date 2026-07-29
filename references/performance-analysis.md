@@ -2,9 +2,36 @@
 
 当用户询问 kernel time、profiler 模式、op_summary、慢用例、性能回退对比、cube/vector 瓶颈或性能优化时，读取本文件。
 
+如果用户要先生成性能用例表，或指定 case 表和 sheet 跑 profiler，先读取 `case-running.md`。
+
 ## 运行 profiler 模式
 
-在 `fag_debug_tools` 下执行：
+性能验证优先参考 `<FAG_TEST_ROOT>/run_with_pta.sh` 和 `<FAG_TEST_ROOT>/run_with_tilingKey.sh`。
+
+直接 PTA profiling：
+
+```bash
+cd <FAG_TEST_ROOT>
+bash ./run_with_pta.sh <CANN_PACKAGE_PATH>
+```
+
+指定 tiling_key 构建、安装并 profiling：
+
+```bash
+cd <FAG_TEST_ROOT>
+bash ./run_with_tilingKey.sh <CANN_PACKAGE_PATH> <OPS_TRANSFORMER_ROOT> <FAG_TEST_ROOT>
+```
+
+`run_with_tilingKey.sh` 的核心动作：
+
+- 设置 `CANN_PATH=$1`、`CODE_PATH=$2`、`TEST_PATH=$3`。
+- `source <CANN_PACKAGE_PATH>/cann/bin/setenv.bash`。
+- 在 `<OPS_TRANSFORMER_ROOT>` 执行 `bash build.sh --pkg --ops="flash_attention_score_grad" --soc=ascend950 --tiling_key="19843988006114480"`。
+- 检查并安装 `build/cann-ops-transformer-custom_linux-x86_64.run` 到 `<CANN_PACKAGE_PATH>`。
+- `source <CANN_PACKAGE_PATH>/vendors/custom_transformer/bin/set_env.bash`。
+- 在 `<FAG_TEST_ROOT>` 通过 `msprof --output=./profiling` 执行 `run_fag.py`，再执行 `show_prof.py`。
+
+需要临时绕开脚本时，在 `<FAG_TEST_ROOT>` 下执行：
 
 ```powershell
 python -u .\run_fag.py --case .\data\FASG.xls --sheet Sheet1 --pta_mode=profiler --device 0 --start-from 1 --end-at 2
@@ -38,7 +65,7 @@ Get-Content .\run_log.txt -Tail 200
 python .\fag_test\show_prof.py --help
 ```
 
-依赖 `show_prof.py` 的参数前，先阅读当前脚本，保证命令示例与实际 CLI 一致。
+依赖 `show_prof.py` 的参数前，先阅读 `<FAG_TEST_ROOT>` 下的脚本，保证命令示例与实际 CLI 一致。
 
 ## 分析清单
 
@@ -81,8 +108,8 @@ tiling/key 选择：
 
 - `op_kernel/arch35/flash_attention_score_grad_common.h`
 - 活跃源码树中的 buffer 相关公共头文件。
-- 顶层笔记：`buffer_allocation_analysis.md`、`cube_scalar_optimization_plan.md`。
+- 如用户提供了额外性能分析笔记，可作为背景材料；修改代码前仍以 `<OPS_TRANSFORMER_ROOT>` 中源码为准。
 
 ## 输出报告
 
-说明数字来源：profiler 模式、结果表 kernel time，还是日志推断。包含精确命令和结果产物。如果本地不能运行，给出应在 NPU 环境执行的命令，并列出需要检查的产物和列名。
+说明数字来源：profiler 模式、结果表 kernel time，还是日志推断。包含精确命令和结果产物。如果当前执行环境不能运行，给出应在 NPU 环境执行的命令，并列出需要检查的产物和列名。
