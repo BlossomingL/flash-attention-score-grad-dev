@@ -2,8 +2,6 @@
 
 当用户询问 kernel time、profiler 模式、op_summary、慢用例、性能回退对比、cube/vector 瓶颈或性能优化时，读取本文件。
 
-如果用户是在搭建系统化性能测试、上板调试或 CPU 仿真流程，先读取 `test-framework.md`，再回到本文件补充 profiler 和瓶颈分析细节。
-
 ## 运行 profiler 模式
 
 在 `fag_debug_tools` 下执行：
