@@ -8,7 +8,7 @@
 
 1. 用 `--start-from X --end-at X+1` 单行复现。
 2. 先跑 `--golden-only`，验证用例解析和 golden 生成。
-3. 再优先参考 `<FAG_TEST_ROOT>/run_with_pta.sh` 的 PTA 调测链路跑 NPU 精度。
+3. 再按用户选择的运行模式执行：无需编译直接跑时参考 `<FAG_TEST_ROOT>/run_with_pta.sh`；先构建指定 tiling_key 再跑时参考 `<FAG_TEST_ROOT>/run_with_tilingKey.sh`。
 4. 如果失败，仅在确认 golden 产物与当前代码匹配时，才使用 `--cache-data` 复跑。
 5. 改代码前先归类：环境/依赖问题、非法用例、能力限制、golden/脚本问题、疑似算子精度问题。
 
@@ -33,40 +33,40 @@ bash ./run_with_pta.sh <CANN_PACKAGE_PATH>
 
 在 `<FAG_TEST_ROOT>` 下执行；这些命令用于 golden-only、单行复现或临时改参数，正式 PTA 调测优先对齐 `run_with_pta.sh`：
 
-```powershell
-python -u .\run_fag.py --golden-only --case .\data\FASG.xls --sheet Sheet1 --start-from 1 --end-at 2
-python -u .\run_fag.py --case .\data\FASG.xls --sheet Sheet1 --pta --pta_mode=only_grad --device 0 --start-from 1 --end-at 2
-python -u .\run_fag.py --case .\data\FASG.xls --sheet Sheet1 --cache-data --pta_mode=only_grad --device 0 --start-from 1 --end-at 2
+```bash
+python3 -u ./run_fag.py --golden-only --case ./data/FASG.xls --sheet Sheet1 --start-from 1 --end-at 2
+python3 -u ./run_fag.py --case ./data/FASG.xls --sheet Sheet1 --pta --pta_mode=only_grad --device 0 --start-from 1 --end-at 2
+python3 -u ./run_fag.py --case ./data/FASG.xls --sheet Sheet1 --cache-data --pta_mode=only_grad --device 0 --start-from 1 --end-at 2
 ```
 
 大 shape 或内存压力场景：
 
-```powershell
-python -u .\run_fag.py --golden-only --flash-golden --case .\data\FASG.xls --sheet Sheet1 --start-from 1 --end-at 2
-python -u .\run_fag.py --case .\data\FASG.xls --sheet Sheet1 --no-save-golden --flash-golden --pta_mode=only_grad --device 0 --start-from 1 --end-at 2
+```bash
+python3 -u ./run_fag.py --golden-only --flash-golden --case ./data/FASG.xls --sheet Sheet1 --start-from 1 --end-at 2
+python3 -u ./run_fag.py --case ./data/FASG.xls --sheet Sheet1 --no-save-golden --flash-golden --pta_mode=only_grad --device 0 --start-from 1 --end-at 2
 ```
 
 批量预设：
 
-```powershell
-python -u .\run_fag.py --case .\data\FASG_David.xls --sheet Sheet1 --pta --pta_mode=only_grad --device 0 --start-from 1 --end-at -1
-python -u .\run_fag.py --case .\data\FASG_TND1.xls --sheet Sheet1 --pta --pta_mode=only_grad --device 0 --start-from 1 --end-at -1
-python -u .\run_fag.py --case .\data\FASG_PSE_cases.csv --sheet Sheet1 --pta --pta_mode=only_grad --device 0 --start-from 1 --end-at -1
+```bash
+python3 -u ./run_fag.py --case ./data/FASG_David.xls --sheet Sheet1 --pta --pta_mode=only_grad --device 0 --start-from 1 --end-at -1
+python3 -u ./run_fag.py --case ./data/FASG_TND1.xls --sheet Sheet1 --pta --pta_mode=only_grad --device 0 --start-from 1 --end-at -1
+python3 -u ./run_fag.py --case ./data/FASG_PSE_cases.csv --sheet Sheet1 --pta --pta_mode=only_grad --device 0 --start-from 1 --end-at -1
 ```
 
 ## 证据检查
 
 最新结果表：
 
-```powershell
-Get-ChildItem .\results\FlashAttentionScoreGrad_Result_* | Sort-Object LastWriteTime -Descending | Select-Object -First 5
+```bash
+ls -t ./results/FlashAttentionScoreGrad_Result_* | head -5
 ```
 
 日志信号：
 
-```powershell
-Get-Content .\run_log.txt -Tail 200
-Select-String -Path .\run_log.txt -Pattern "error:","Traceback","diff_max","dq","dk","dv"
+```bash
+tail -n 200 ./run_log.txt
+grep -nE "error:|Traceback|diff_max|dq|dk|dv" ./run_log.txt
 ```
 
 结果表中优先检查：

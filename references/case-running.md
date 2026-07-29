@@ -15,6 +15,28 @@
 - 描述生成：用户给出用例描述，由 Codex 根据 `<FAG_TEST_ROOT>/data` 下表格模板生成新用例表。
 - 指定表格：用户给出 case 表路径和 sheet，直接运行该表。
 
+## 运行模式选择
+
+生成或确认 case 表后、实际执行前，必须让用户选择运行模式：
+
+| 选项 | 含义 | 命令 |
+| --- | --- | --- |
+| 无需编译直接跑 | 使用已有 CANN/算子环境，直接跑 PTA/profiling | `bash ./run_with_pta.sh <CANN_PACKAGE_PATH>` |
+| 先构建指定 tiling_key 再跑 | 先在 `<OPS_TRANSFORMER_ROOT>` 构建指定 tiling_key 的自定义算子包，安装到 `<CANN_PACKAGE_PATH>` 后再跑 PTA/profiling | `bash ./run_with_tilingKey.sh <CANN_PACKAGE_PATH> <OPS_TRANSFORMER_ROOT> <FAG_TEST_ROOT>` |
+
+交互要求：
+
+- 如果当前界面支持选择框，弹出两个选项让用户选择。
+- 如果当前界面不支持选择框，用文本追问：“请选择运行模式：1. 无需编译直接跑；2. 先构建指定 tiling_key 再跑”。
+- 用户选择前，不要执行 `run_with_pta.sh` 或 `run_with_tilingKey.sh`。
+- 如果用户已经在请求里明确说明“直接跑”或“先构建 tiling_key”，可以把它当作已选择模式，但仍要在执行计划中写明。
+
+命令行兜底：
+
+```bash
+python ./scripts/fag_command.py choose-run-mode
+```
+
 ## 方式一：描述生成用例表
 
 适用场景：
@@ -106,6 +128,7 @@ python3 -u run_fag.py --case <case_path> --sheet <sheet> --pta_mode=profiler --d
 - case表：<case_path>
 - sheet：<sheet>
 - 行范围：<start>-<end>
+- 运行模式：无需编译直接跑 / 先构建指定 tiling_key 再跑
 - 验证链路：golden-only / PTA / tilingKey / profiler
 ```
 

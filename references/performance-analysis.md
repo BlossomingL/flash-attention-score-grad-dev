@@ -8,6 +8,8 @@
 
 性能验证优先参考 `<FAG_TEST_ROOT>/run_with_pta.sh` 和 `<FAG_TEST_ROOT>/run_with_tilingKey.sh`。
 
+执行前先让用户选择运行模式：无需编译直接跑，或先构建指定 tiling_key 再跑。
+
 直接 PTA profiling：
 
 ```bash
@@ -33,16 +35,16 @@ bash ./run_with_tilingKey.sh <CANN_PACKAGE_PATH> <OPS_TRANSFORMER_ROOT> <FAG_TES
 
 需要临时绕开脚本时，在 `<FAG_TEST_ROOT>` 下执行：
 
-```powershell
-python -u .\run_fag.py --case .\data\FASG.xls --sheet Sheet1 --pta_mode=profiler --device 0 --start-from 1 --end-at 2
+```bash
+python3 -u ./run_fag.py --case ./data/FASG.xls --sheet Sheet1 --pta_mode=profiler --device 0 --start-from 1 --end-at 2
 ```
 
 按类别运行：
 
-```powershell
-python -u .\run_fag.py --case .\data\FASG_David.xls --sheet Sheet1 --pta_mode=profiler --device 0 --start-from 1 --end-at -1
-python -u .\run_fag.py --case .\data\FASG_TND1.xls --sheet Sheet1 --pta_mode=profiler --device 0 --start-from 1 --end-at -1
-python -u .\run_fag.py --case .\data\FASG_PSE_cases.csv --sheet Sheet1 --pta_mode=profiler --device 0 --start-from 1 --end-at -1
+```bash
+python3 -u ./run_fag.py --case ./data/FASG_David.xls --sheet Sheet1 --pta_mode=profiler --device 0 --start-from 1 --end-at -1
+python3 -u ./run_fag.py --case ./data/FASG_TND1.xls --sheet Sheet1 --pta_mode=profiler --device 0 --start-from 1 --end-at -1
+python3 -u ./run_fag.py --case ./data/FASG_PSE_cases.csv --sheet Sheet1 --pta_mode=profiler --device 0 --start-from 1 --end-at -1
 ```
 
 先跑小行范围。全量性能 sweep 可能耗时较长，应明确目标后再跑。
@@ -59,10 +61,10 @@ python -u .\run_fag.py --case .\data\FASG_PSE_cases.csv --sheet Sheet1 --pta_mod
 
 快速检查：
 
-```powershell
-Get-ChildItem .\results\FlashAttentionScoreGrad_Result_* | Sort-Object LastWriteTime -Descending | Select-Object -First 5
-Get-Content .\run_log.txt -Tail 200
-python .\fag_test\show_prof.py --help
+```bash
+ls -t ./results/FlashAttentionScoreGrad_Result_* | head -5
+tail -n 200 ./run_log.txt
+python3 ./fag_test/show_prof.py --help
 ```
 
 依赖 `show_prof.py` 的参数前，先阅读 `<FAG_TEST_ROOT>` 下的脚本，保证命令示例与实际 CLI 一致。

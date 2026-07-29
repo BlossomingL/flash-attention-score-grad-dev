@@ -11,12 +11,12 @@
 
 常用命令：
 
-```powershell
-rg -n "flash_attention_score_grad|FlashAttentionScoreGrad|FAG" <OPS_TRANSFORMER_ROOT>\attention\flash_attention_score_grad
-rg -n "TND|BNSD|pse|dropout|rope|sink|deterministic|tilingKey" <OPS_TRANSFORMER_ROOT>\attention\flash_attention_score_grad\op_host <OPS_TRANSFORMER_ROOT>\attention\flash_attention_score_grad\op_kernel
+```bash
+rg -n "flash_attention_score_grad|FlashAttentionScoreGrad|FAG" <OPS_TRANSFORMER_ROOT>/attention/flash_attention_score_grad
+rg -n "TND|BNSD|pse|dropout|rope|sink|deterministic|tilingKey" <OPS_TRANSFORMER_ROOT>/attention/flash_attention_score_grad/op_host <OPS_TRANSFORMER_ROOT>/attention/flash_attention_score_grad/op_kernel
 ```
 
-如果全工作区搜索遇到 Windows `nul` 文件报错，缩小到已知目录搜索。
+搜索范围优先限制在 `<OPS_TRANSFORMER_ROOT>` 和 `<FAG_TEST_ROOT>`，不要扫描无关目录。
 
 ## 修改策略
 
@@ -50,18 +50,18 @@ rg -n "TND|BNSD|pse|dropout|rope|sink|deterministic|tilingKey" <OPS_TRANSFORMER_
 
 使用覆盖风险的最低成本验证：
 
-```powershell
-Set-Location <FAG_TEST_ROOT>
-python -u .\run_fag.py --golden-only --case .\data\FASG.xls --sheet Sheet1 --start-from 1 --end-at 2
-python -u .\run_fag.py --case .\data\FASG.xls --sheet Sheet1 --pta --pta_mode=only_grad --device 0 --start-from 1 --end-at 2
+```bash
+cd <FAG_TEST_ROOT>
+python3 -u ./run_fag.py --golden-only --case ./data/FASG.xls --sheet Sheet1 --start-from 1 --end-at 2
+python3 -u ./run_fag.py --case ./data/FASG.xls --sheet Sheet1 --pta --pta_mode=only_grad --device 0 --start-from 1 --end-at 2
 ```
 
 smoke 通过后再扩大：
 
-```powershell
-python -u .\run_fag.py --case .\data\FASG_David.xls --sheet Sheet1 --pta --pta_mode=only_grad --device 0 --start-from 1 --end-at -1
-python -u .\run_fag.py --case .\data\FASG_TND1.xls --sheet Sheet1 --pta --pta_mode=only_grad --device 0 --start-from 1 --end-at -1
-python -u .\run_fag.py --case .\data\FASG_PSE_cases.csv --sheet Sheet1 --pta --pta_mode=only_grad --device 0 --start-from 1 --end-at -1
+```bash
+python3 -u ./run_fag.py --case ./data/FASG_David.xls --sheet Sheet1 --pta --pta_mode=only_grad --device 0 --start-from 1 --end-at -1
+python3 -u ./run_fag.py --case ./data/FASG_TND1.xls --sheet Sheet1 --pta --pta_mode=only_grad --device 0 --start-from 1 --end-at -1
+python3 -u ./run_fag.py --case ./data/FASG_PSE_cases.csv --sheet Sheet1 --pta --pta_mode=only_grad --device 0 --start-from 1 --end-at -1
 ```
 
 验证后报告：

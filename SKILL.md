@@ -49,15 +49,22 @@ description: 支持用户指定路径下 FlashAttentionScoreGrad/FAG Ascend 算�
 - 描述生成：用户手动输入用例描述，先读取 `<FAG_TEST_ROOT>/data` 下已有表格模板，再按模板字段生成新用例表。
 - 指定表格：用户直接提供 case 表路径和 sheet，按用户指定表格运行，不自动改表。
 
+正式跑用例前必须让用户选择运行模式：
+
+- 无需编译直接跑：调用 `<FAG_TEST_ROOT>/run_with_pta.sh <CANN_PACKAGE_PATH>`。
+- 先构建指定 tiling_key 再跑：调用 `<FAG_TEST_ROOT>/run_with_tilingKey.sh <CANN_PACKAGE_PATH> <OPS_TRANSFORMER_ROOT> <FAG_TEST_ROOT>`。
+
+如果当前交互界面支持选择框，用选择框展示以上两个选项；如果不支持，直接用文字询问用户选择哪一种。
+
 ## 工作区默认入口
 
 日常使用 `<FAG_TEST_ROOT>` 作为 Python 调试工具路径：
 
-```powershell
-Set-Location <FAG_TEST_ROOT>
-python -u .\run_fag.py --golden-only --case .\data\FASG.xls --sheet Sheet1 --start-from 1 --end-at 2
-python -u .\run_fag.py --case .\data\FASG.xls --sheet Sheet1 --pta --pta_mode=only_grad --device 0 --start-from 1 --end-at 2
-python -u .\run_fag.py --case .\data\FASG.xls --sheet Sheet1 --pta_mode=profiler --device 0 --start-from 1 --end-at 2
+```bash
+cd <FAG_TEST_ROOT>
+python3 -u ./run_fag.py --golden-only --case ./data/FASG.xls --sheet Sheet1 --start-from 1 --end-at 2
+python3 -u ./run_fag.py --case ./data/FASG.xls --sheet Sheet1 --pta --pta_mode=only_grad --device 0 --start-from 1 --end-at 2
+python3 -u ./run_fag.py --case ./data/FASG.xls --sheet Sheet1 --pta_mode=profiler --device 0 --start-from 1 --end-at 2
 ```
 
 常用文件：
@@ -98,7 +105,8 @@ python -u .\run_fag.py --case .\data\FASG.xls --sheet Sheet1 --pta_mode=profiler
 
 需要生成命令模板时，优先使用：
 
-```powershell
-python .\scripts\fag_command.py pta-script
-python .\scripts\fag_command.py tilingkey-script
+```bash
+python3 ./scripts/fag_command.py choose-run-mode
+python3 ./scripts/fag_command.py pta-script
+python3 ./scripts/fag_command.py tilingkey-script
 ```
