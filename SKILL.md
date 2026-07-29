@@ -1,9 +1,28 @@
 ---
 name: flash-attention-score-grad-dev
-description: 支持当前工作区 FlashAttentionScoreGrad/FAG Ascend 算子的日常开发，包括源码导航、tiling/kernel 修改、调试运行、golden 生成、精度问题定位、结果/日志解读和性能分析。用于处理 FlashAttentionScoreGrad、flash_attention_score_grad、FAG 用例、dq/dk/dv 精度异常、TND/BNSD/PSE/dropout/rope/sink 场景，以及 ops-transformer*/attention/flash_attention_score_grad 和 fag_debug_tools 下的 profiler 分析任务。
+description: 支持当前工作区 FlashAttentionScoreGrad/FAG Ascend 算子的日常开发，包括源码导航、tiling/kernel 修改、调试运行、golden 生成、精度问题定位、结果/日志解读和性能分析。用于处理 FlashAttentionScoreGrad、flash_attention_score_grad、FAG 用例、dq/dk/dv 精度异常、TND/BNSD/PSE/dropout/rope/sink 场景，以及 ops-transformer*/attention/flash_attention_score_grad 和 fag_debug_tools 下的 profiler 分析任务。使用本 skill 时，无论用户提出什么需求，都必须先要求用户提供 ops-transformer 仓路径、测试脚本仓路径和 CANN 包路径。
 ---
 
 # FlashAttentionScoreGrad 开发
+
+## 强制前置确认
+
+无论用户提出什么需求，先要求用户提供以下三项信息：
+
+- `ops-transformer仓路径`：待开发或分析的算子源码仓路径。
+- `测试脚本仓路径`：包含 `run_fag.py` 或等价 FAG 测试入口的测试代码路径。
+- `CANN包路径`：用于构建、上板、仿真或环境确认的 CANN 安装包/工具包路径。
+
+只有在用户已经明确给出这三项信息后，才能继续源码搜索、测试命令生成、精度定位、性能分析、上板调试、CPU 仿真或文档补充。不要用当前工作区自动探测结果替代用户确认；探测结果只能在用户给出路径后用于校验。
+
+缺少任意一项时，先只追问缺失项：
+
+```text
+请先提供以下路径后我再继续：
+- ops-transformer仓路径：
+- 测试脚本仓路径：
+- CANN包路径：
+```
 
 ## 先看这里
 

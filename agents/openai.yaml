@@ -1,4 +1,4 @@
 interface:
   display_name: "FlashAttentionScoreGrad Dev"
   short_description: "开发、调试和分析 FAG 算子。"
-  default_prompt: "使用 $flash-attention-score-grad-dev 定位当前工作区中的 FlashAttentionScoreGrad 精度或性能问题。"
+  default_prompt: "使用 $flash-attention-score-grad-dev 定位 FlashAttentionScoreGrad 问题；请先提供 ops-transformer仓路径、测试脚本仓路径和 CANN包路径。"
