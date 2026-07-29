@@ -2,6 +2,8 @@
 
 当用户报告 dq/dk/dv 不一致、`diff_max`、结果表失败、golden 问题，或怀疑 PSE/mask/dropout/rope/TND 场景异常时，读取本文件。
 
+如果用户是在规划系统化精度测试、上板调试或 CPU 仿真流程，先读取 `test-framework.md`，再回到本文件补充失败定位细节。
+
 ## 分流流程
 
 1. 用 `--start-from X --end-at X+1` 单行复现。

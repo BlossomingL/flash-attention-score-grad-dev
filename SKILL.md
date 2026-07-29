@@ -1,20 +1,23 @@
 ---
 name: flash-attention-score-grad-dev
-description: 支持当前工作区 FlashAttentionScoreGrad/FAG Ascend 算子的日常开发，包括源码导航、tiling/kernel 修改、调试运行、golden 生成、精度问题定位、结果/日志解读和性能分析。用于处理 FlashAttentionScoreGrad、flash_attention_score_grad、FAG 用例、dq/dk/dv 精度异常、TND/BNSD/PSE/dropout/rope/sink 场景，以及 ops-transformer*/attention/flash_attention_score_grad 和 fag_debug_tools 下的 profiler 分析任务。
+description: 支持当前工作区 FlashAttentionScoreGrad/FAG Ascend 算子的日常开发，包括源码导航、tiling/kernel 修改、调试运行、golden 生成、精度测试、性能测试、上板调试、CPU 仿真、结果/日志解读和问题定位。用于处理 FlashAttentionScoreGrad、flash_attention_score_grad、FAG 用例、dq/dk/dv 精度异常、TND/BNSD/PSE/dropout/rope/sink 场景，以及 ops-transformer*/attention/flash_attention_score_grad 和 fag_debug_tools 下的 profiler 分析任务。
 ---
 
 # FlashAttentionScoreGrad 开发
 
 ## 先看这里
 
-把这个 skill 当作当前工作区专用的 FlashAttentionScoreGrad 开发手册。先判断用户目标属于源码开发、精度定位、性能分析还是测试工具维护，再只加载匹配的参考文档：
+把这个 skill 当作当前工作区专用的 FlashAttentionScoreGrad 开发手册。先判断用户目标属于源码开发、测试框架、精度定位、性能分析还是测试工具维护，再只加载匹配的参考文档：
 
 - 源码导航或实现修改：读取 `references/repo-map.md` 和 `references/development.md`。
+- 精度/性能测试流程、上板调试、CPU 仿真框架：读取 `references/test-framework.md`。
 - 精度失败、dq/dk/dv 不一致、golden 问题、用例分流：读取 `references/precision-debug.md`。
 - profiler、kernel time、慢用例、op_summary 分析：读取 `references/performance-analysis.md`。
 - 不确定路径或最新产物：运行 `python flash-attention-score-grad-dev/scripts/fag_probe.py`。
 
 默认不要直接跑全量用例。先跑单行或小范围 smoke，再决定是否扩大回归。
+
+执行精度测试、性能测试、上板调试或 CPU 仿真前，先确认两个输入：CANN 包路径、测试代码路径。测试代码路径如果用户留空，使用默认地址 `https://gitcode.com/coder_linx/fag_debug_tools/`。
 
 ## 工作区默认入口
 
@@ -53,5 +56,6 @@ python -u .\run_fag.py --case .\data\FASG.xls --sheet Sheet1 --pta_mode=profiler
 
 - `scripts/fag_probe.py`：打印已发现的源码树、调试工具文件、最新结果和近期日志信号。
 - `scripts/fag_command.py`：生成 golden-only、精度、profiler、batch、TND、PSE 等常用命令模板。
+- `scripts/fag_test_plan.py`：生成精度/性能、上板/CPU 仿真的测试计划骨架；加 `--interactive` 可交互确认 CANN 包路径和测试代码路径。
 
 除非脚本另有说明，默认从工作区根目录运行。
